@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Retro Player</title>
+<meta name="theme-color" content="#0e0f1a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root {
+    --bg: #0e0f1a;
+    --panel: #181a2b;
+    --line: #2a2d45;
+    --fg: #e9e9f2;
+    --muted: #8d90a8;
+    --accent: #fc7460;
+    --accent-ink: #1a0c09;
+    --ok: #58d854;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding: 20px max(16px, env(safe-area-inset-right)) 32px max(16px, env(safe-area-inset-left));
+  }
+  .wrap { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+  h1 { margin: 0; font-size: 22px; letter-spacing: 0.02em; }
+  h1 span { color: var(--accent); }
+  h2 { margin: 0; font-size: 14px; }
+  p { margin: 0; }
+  .muted { color: var(--muted); font-size: 13px; }
+
+  .controls { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+  .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  select, input[type=file] { width: 100%; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 9px 10px; font: inherit; }
+  input[type=file]::file-selector-button { background: var(--line); color: var(--fg); border: 0; border-radius: 4px; padding: 5px 10px; margin-right: 10px; font: inherit; cursor: pointer; }
+  .hint { font-size: 12px; color: var(--muted); min-height: 1.4em; }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  button { font: inherit; font-weight: 600; border: 0; border-radius: 6px; padding: 10px 18px; cursor: pointer; }
+  .primary { background: var(--accent); color: var(--accent-ink); }
+  .ghost { background: var(--line); color: var(--fg); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .status { font-size: 13px; color: var(--muted); min-height: 1.4em; flex: 1 1 180px; }
+  .status.ok { color: var(--ok); }
+
+  .stage { background: #000; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; aspect-ratio: 4 / 3; max-height: 78vh; width: 100%; display: grid; place-items: center; }
+  .stage iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .empty { color: var(--muted); text-align: center; padding: 24px; max-width: 420px; }
+
+  .library { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 10px; }
+  .games { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .game { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+  .game .meta { min-width: 0; flex: 1 1 200px; }
+  .game .name { font-weight: 600; overflow-wrap: anywhere; }
+  .game .sub { font-size: 12px; color: var(--muted); }
+  .game .sub .saved { color: var(--ok); }
+  .game .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+  .game button { padding: 7px 12px; font-size: 14px; }
+  .slots { flex: 1 1 100%; display: flex; flex-wrap: wrap; gap: 6px; }
+  .slots button { padding: 5px 10px; font-size: 12px; font-weight: 500; }
+  .slots button.has { background: var(--line); color: var(--fg); }
+  .slots button.empty-slot { background: transparent; color: var(--muted); border: 1px dashed var(--line); }
+  #slot { width: auto; padding: 9px 10px; }
+  .danger { background: transparent; color: var(--muted); border: 1px solid var(--line); }
+
+  .cheats { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 10px; }
+  .cheatlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .cheatlist li { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+  .cheatlist label { text-transform: none; letter-spacing: 0; font-size: 14px; color: var(--fg); display: flex; gap: 8px; align-items: center; flex: 1 1 200px; min-width: 0; cursor: pointer; }
+  .cheatlist input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--accent); flex: none; }
+  .cheatlist .code { font-family: ui-monospace, Consolas, monospace; font-size: 13px; color: var(--muted); }
+  .cheatlist button { padding: 4px 10px; font-size: 13px; }
+  .cheatadd { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr) auto; gap: 8px; }
+  .cheatadd input, .cheats input[type=text] { width: 100%; min-width: 0; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 9px 10px; font: inherit; }
+  @media (max-width: 560px) { .cheatadd { grid-template-columns: 1fr; } }
+  .info { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 8px; font-size: 14px; }
+  .info ul { margin: 0; padding-left: 18px; color: var(--muted); }
+  code { background: var(--bg); padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Retro <span>Player</span></h1>
+    <p class="muted">Chọn file game bạn đã tải về, chọn hệ máy rồi bấm Chơi. Game và điểm lưu được giữ trong bộ nhớ của app trên máy bạn, không tải lên đâu cả.</p>
+  </header>
+
+  <section class="controls" aria-label="Thêm game">
+    <div class="field">
+      <label for="system">Hệ máy</label>
+      <select id="system">
+        <option value="nes">NES / Famicom (4 nút: A, B, Select, Start)</option>
+        <option value="segaMD">Mega Drive / Genesis (6 nút)</option>
+        <option value="snes">SNES (6 nút)</option>
+        <option value="psx">PlayStation 1</option>
+        <option value="gb">Game Boy / Color</option>
+        <option value="gba">Game Boy Advance</option>
+        <option value="segaMS">Master System / Game Gear</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="rom">File game</label>
+      <input id="rom" type="file">
+      <span class="hint" id="romHint">Hỗ trợ .nes .md .gen .smd .sfc .smc .gb .gba .cue .chd .pbp .iso .zip</span>
+    </div>
+    <div class="field" id="biosField" hidden>
+      <label for="bios">BIOS PS1 (không bắt buộc)</label>
+      <input id="bios" type="file">
+      <span class="hint" id="biosHint">Nhiều game chạy được không cần BIOS. Nếu game không lên hình, nạp file BIOS PS1 của bạn vào đây. BIOS chỉ cần nạp một lần.</span>
+    </div>
+  </section>
+
+  <div class="actions">
+    <button class="primary" id="play" disabled>Chơi</button>
+    <select id="slot" aria-label="Ô lưu" disabled></select>
+    <button class="ghost" id="saveNow" disabled>Lưu vào ô</button>
+    <button class="ghost" id="loadSlot" disabled>Nạp ô</button>
+    <button class="ghost" id="stop" disabled>Dừng</button>
+    <button class="ghost" id="full" disabled>Toàn màn hình</button>
+    <span class="status" id="status" role="status" aria-live="polite"></span>
+  </div>
+
+  <div class="stage" id="stage">
+    <p class="empty">Chưa có game nào đang chạy. Chọn game trong thư viện hoặc thêm file mới ở trên.</p>
+  </div>
+
+  <section class="cheats" id="cheatsBox" aria-label="Mã cheat" hidden>
+    <h2>Thêm mạng và mẹo cho game đang chơi</h2>
+    <p class="muted" id="cheatsHint">Nhập mã Game Genie hoặc mã cheat khác của đúng game này. Mã được lưu theo từng game và tự bật mỗi lần mở game.</p>
+    <ul class="cheatlist" id="cheatList"></ul>
+    <div class="cheatadd">
+      <input type="text" id="cheatName" placeholder="Tên mã, ví dụ: Vô hạn mạng" aria-label="Tên mã" autocomplete="off">
+      <input type="text" id="cheatCode" placeholder="Mã, ví dụ: SZEIUZVI" aria-label="Mã cheat" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button type="button" class="ghost" id="cheatAdd">Thêm mã</button>
+    </div>
+    <div class="actions">
+      <button type="button" class="ghost" id="cheatPreset" hidden>Thêm mã gợi ý cho Contra (bản Mỹ)</button>
+    </div>
+  </section>
+
+  <section class="library" aria-label="Thư viện game">
+    <h2>Thư viện của tôi</h2>
+    <ul class="games" id="games"></ul>
+    <p class="muted" id="libEmpty">Chưa có game nào. Game bạn chơi sẽ tự được lưu vào đây.</p>
+  </section>
+
+  <section class="info">
+    <h2>Lưu và chơi tiếp</h2>
+    <ul>
+      <li>Mỗi game có 1 ô lưu tự động và 5 ô lưu của bạn. Ô tự động được ghi mỗi 15 giây, khi thoát ra màn hình chính, khóa máy hoặc bấm Dừng.</li>
+      <li>Khi đang chơi, chọn Ô 1 đến Ô 5 rồi bấm Lưu vào ô để giữ lại một chỗ cụ thể. Bấm Nạp ô để quay lại chỗ đã lưu. Trong thư viện, bấm vào từng ô để mở game ở đúng ô đó, hoặc bấm Chơi tiếp để vào ô lưu gần nhất.</li>
+      <li>Chơi mới chỉ xóa ô tự động, 5 ô của bạn vẫn còn.</li>
+      <li>Dữ liệu nằm trong bộ nhớ của app. Gỡ app hoặc xóa dữ liệu app trong Cài đặt Android thì mất game và điểm lưu.</li>
+    </ul>
+    <h2>Thêm mạng cho game</h2>
+    <ul>
+      <li>Khi đang chơi, mục "Thêm mạng và mẹo" hiện ra bên dưới màn hình. Nhập mã Game Genie của game rồi bật công tắc. Mã đúng với từng bản game (bản Mỹ, bản Nhật có mã khác nhau).</li>
+      <li>Contra bản Mỹ có sẵn nút thêm mã gợi ý. Ngoài ra Contra có mật mã 30 mạng không cần cheat: ở màn hình tiêu đề bấm Lên, Lên, Xuống, Xuống, Trái, Phải, Trái, Phải, B, A rồi Start.</li>
+    </ul>
+    <h2>Điều khiển</h2>
+    <ul>
+      <li>Trên điện thoại, nút cảm ứng hiện ngay trên màn hình game. Trên máy tính dùng bàn phím hoặc tay cầm USB/Bluetooth, đổi phím trong menu bánh răng của trình giả lập.</li>
+      <li>PS1: nên dùng file <code>.chd</code>, <code>.pbp</code> hoặc <code>.iso</code>. Game dạng <code>.cue</code> kèm nhiều file <code>.bin</code> hãy nén chung vào một file <code>.zip</code>.</li>
+    </ul>
+    <p class="muted">Chỉ dùng game và BIOS mà bạn sở hữu hợp pháp. Trình giả lập tải từ cdn.emulatorjs.org, nên cần có mạng lần đầu mở app.</p>
+  </section>
+</div>
+
+<script>
+(function () {
+  var CDN = 'https://cdn.emulatorjs.org/stable/data/';
+  var SYSTEMS = {
+    nes: 'NES', segaMD: 'Mega Drive', snes: 'SNES', psx: 'PS1',
+    gb: 'Game Boy', gba: 'GBA', segaMS: 'Master System'
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  var sys = $('system'), rom = $('rom'), bios = $('bios'), biosField = $('biosField');
+  var playBtn = $('play'), saveBtn = $('saveNow'), loadBtn = $('loadSlot'), slotSel = $('slot'), stopBtn = $('stop'), fullBtn = $('full');
+  var stage = $('stage'), romHint = $('romHint'), biosHint = $('biosHint');
+  var statusEl = $('status'), listEl = $('games'), libEmpty = $('libEmpty');
+  var cheatsBox = $('cheatsBox'), cheatList = $('cheatList'), cheatName = $('cheatName'), cheatCode = $('cheatCode'), cheatAdd = $('cheatAdd'), cheatPreset = $('cheatPreset');
+  var cheats = [];
+
+  var urls = [], frame = null, current = null, started = false, timer = null, autoBlocked = false;
+
+  function say(msg, ok) {
+    statusEl.textContent = msg || '';
+    statusEl.className = 'status' + (ok ? ' ok' : '');
+  }
+
+  /* ---------- lưu trữ trong IndexedDB ---------- */
+  var dbp = null;
+  function db() {
+    if (!dbp) {
+      dbp = new Promise(function (res, rej) {
+        var r = indexedDB.open('retro-player', 2);
+        r.onupgradeneeded = function () {
+          var d = r.result;
+          ['games', 'states', 'bios', 'cheats'].forEach(function (n) {
+            if (!d.objectStoreNames.contains(n)) d.createObjectStore(n, { keyPath: 'id' });
+          });
+        };
+        r.onsuccess = function () { res(r.result); };
+        r.onerror = function () { rej(r.error); };
+      });
+    }
+    return dbp;
+  }
+  function req(store, mode, fn) {
+    return db().then(function (d) {
+      return new Promise(function (res, rej) {
+        var r = fn(d.transaction(store, mode).objectStore(store));
+        r.onsuccess = function () { res(r.result); };
+        r.onerror = function () { rej(r.error); };
+      });
+    });
+  }
+  var dbGet = function (s, k) { return req(s, 'readonly', function (o) { return o.get(k); }); };
+  var dbPut = function (s, v) { return req(s, 'readwrite', function (o) { return o.put(v); }); };
+  var dbDel = function (s, k) { return req(s, 'readwrite', function (o) { return o['delete'](k); }); };
+  var dbAll = function (s) { return req(s, 'readonly', function (o) { return o.getAll(); }); };
+
+  /* ---------- ô lưu ---------- */
+  var SLOTS = ['auto', '1', '2', '3', '4', '5'];
+  var MANUAL = ['1', '2', '3', '4', '5'];
+  function skey(id, slot) { return id + '#' + slot; }
+  function slotName(s) { return s === 'auto' ? 'Tự động' : 'Ô ' + s; }
+  function fmtShort(t) {
+    var d = new Date(t);
+    return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+  }
+  /* gom các điểm lưu theo game: { gameId: { slot: record } }. Bản cũ (không có dấu #) tính là ô tự động. */
+  function groupStates(all) {
+    var out = {};
+    all.forEach(function (r) {
+      var gid = r.gameId || r.id, slot = r.slot || 'auto';
+      out[gid] = out[gid] || {};
+      var cur = out[gid][slot];
+      if (!cur || (r.savedAt || 0) > (cur.savedAt || 0)) out[gid][slot] = r;
+    });
+    return out;
+  }
+  function statesOf(gid) {
+    return dbAll('states').then(function (all) { return groupStates(all)[gid] || {}; });
+  }
+  function latestSlot(map) {
+    var best = null;
+    Object.keys(map).forEach(function (k) { if (!best || (map[k].savedAt || 0) > (map[best].savedAt || 0)) best = k; });
+    return best;
+  }
+  function deleteSlots(gid, onlyAuto) {
+    return dbAll('states').then(function (all) {
+      return Promise.all(all.filter(function (r) {
+        var g = r.gameId || r.id, sl = r.slot || 'auto';
+        return g === gid && (!onlyAuto || sl === 'auto');
+      }).map(function (r) { return dbDel('states', r.id); }));
+    });
+  }
+
+  try {
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+  } catch (e) {}
+
+  /* ---------- service worker ---------- */
+  if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+
+  try { var saved = localStorage.getItem('retro-system'); if (saved) sys.value = saved; } catch (e) {}
+
+  var extMap = {
+    nes: 'nes', fds: 'nes',
+    md: 'segaMD', gen: 'segaMD', smd: 'segaMD',
+    sfc: 'snes', smc: 'snes',
+    gb: 'gb', gbc: 'gb', gba: 'gba',
+    sms: 'segaMS', gg: 'segaMS',
+    cue: 'psx', chd: 'psx', pbp: 'psx', iso: 'psx', img: 'psx', ccd: 'psx'
+  };
+
+  function syncSystem() {
+    biosField.hidden = sys.value !== 'psx';
+    try { localStorage.setItem('retro-system', sys.value); } catch (e) {}
+  }
+  sys.addEventListener('change', syncSystem);
+  syncSystem();
+
+  dbGet('bios', 'psx').then(function (b) {
+    if (b) biosHint.textContent = 'Đã lưu BIOS: ' + b.name + '. Chọn file khác nếu muốn thay.';
+  }).catch(function () {});
+
+  bios.addEventListener('change', function () {
+    var f = bios.files[0];
+    if (!f) return;
+    dbPut('bios', { id: 'psx', name: f.name, blob: f }).then(function () {
+      biosHint.textContent = 'Đã lưu BIOS: ' + f.name;
+    }).catch(function () { biosHint.textContent = 'Không lưu được BIOS, sẽ dùng cho lần chơi này.'; });
+  });
+
+  rom.addEventListener('change', function () {
+    var f = rom.files[0];
+    playBtn.disabled = !f;
+    if (!f) { romHint.textContent = ''; return; }
+    var ext = f.name.split('.').pop().toLowerCase();
+    var guess = extMap[ext];
+    if (guess && guess !== sys.value) {
+      sys.value = guess;
+      syncSystem();
+      romHint.textContent = 'Đã tự chọn hệ máy theo đuôi file .' + ext + '. Đổi lại ở trên nếu chưa đúng.';
+    } else {
+      romHint.textContent = f.name;
+    }
+  });
+
+  /* ---------- thư viện ---------- */
+  function fmtDate(t) {
+    if (!t) return '';
+    var d = new Date(t);
+    return d.toLocaleDateString('vi-VN') + ' ' + d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+  }
+  function fmtSize(n) { return (n / 1048576).toFixed(n > 10485760 ? 0 : 1) + ' MB'; }
+
+  function renderLibrary() {
+    Promise.all([dbAll('games'), dbAll('states')]).then(function (r) {
+      var games = r[0].sort(function (a, b) { return (b.lastPlayed || 0) - (a.lastPlayed || 0); });
+      var all = groupStates(r[1]);
+      listEl.textContent = '';
+      libEmpty.hidden = games.length > 0;
+      games.forEach(function (g) {
+        var map = all[g.id] || {};
+        var last = latestSlot(map);
+        var li = document.createElement('li');
+        li.className = 'game';
+
+        var meta = document.createElement('div');
+        meta.className = 'meta';
+        var nm = document.createElement('div');
+        nm.className = 'name';
+        nm.textContent = g.name;
+        var sub = document.createElement('div');
+        sub.className = 'sub';
+        sub.textContent = (SYSTEMS[g.system] || g.system) + ' · ' + fmtSize(g.size || 0) + ' · ';
+        var tag = document.createElement('span');
+        if (last) { tag.className = 'saved'; tag.textContent = 'Lưu gần nhất: ' + slotName(last) + ', ' + fmtShort(map[last].savedAt); }
+        else { tag.textContent = 'Chưa có điểm lưu'; }
+        sub.appendChild(tag);
+        meta.appendChild(nm);
+        meta.appendChild(sub);
+
+        var btns = document.createElement('div');
+        btns.className = 'btns';
+        if (last) {
+          var cont = document.createElement('button');
+          cont.className = 'primary';
+          cont.type = 'button';
+          cont.textContent = 'Chơi tiếp';
+          cont.addEventListener('click', function () { launch(g, last); });
+          btns.appendChild(cont);
+        }
+        var hasAuto = !!map.auto;
+        var fresh = document.createElement('button');
+        fresh.className = last ? 'ghost' : 'primary';
+        fresh.type = 'button';
+        fresh.textContent = last ? 'Chơi mới' : 'Chơi';
+        var armed = false, armTimer = null;
+        fresh.addEventListener('click', function () {
+          if (hasAuto && !armed) {
+            armed = true;
+            fresh.textContent = 'Bỏ ô tự động, chơi mới?';
+            armTimer = setTimeout(function () { armed = false; fresh.textContent = 'Chơi mới'; }, 4000);
+            return;
+          }
+          clearTimeout(armTimer);
+          (hasAuto ? deleteSlots(g.id, true) : Promise.resolve()).then(function () { launch(g, null); });
+        });
+        btns.appendChild(fresh);
+
+        var del = document.createElement('button');
+        del.className = 'danger';
+        del.type = 'button';
+        del.textContent = 'Xóa';
+        var delArmed = false, delTimer = null;
+        del.addEventListener('click', function () {
+          if (!delArmed) {
+            delArmed = true;
+            del.textContent = 'Bấm lần nữa để xóa';
+            delTimer = setTimeout(function () { delArmed = false; del.textContent = 'Xóa'; }, 4000);
+            return;
+          }
+          clearTimeout(delTimer);
+          var pre = current && current.id === g.id ? stopNoSave() : Promise.resolve();
+          pre.then(function () { return Promise.all([dbDel('games', g.id), dbDel('cheats', g.id).catch(function () {}), deleteSlots(g.id, false)]); }).then(renderLibrary);
+        });
+        btns.appendChild(del);
+
+        var row = document.createElement('div');
+        row.className = 'slots';
+        SLOTS.forEach(function (sl) {
+          var b = document.createElement('button');
+          b.type = 'button';
+          var rec = map[sl];
+          if (rec) {
+            b.className = 'has';
+            b.textContent = slotName(sl) + ' · ' + fmtShort(rec.savedAt);
+            b.addEventListener('click', function () { launch(g, sl); });
+          } else {
+            b.className = 'empty-slot';
+            b.textContent = slotName(sl) + ' · trống';
+            b.disabled = true;
+          }
+          row.appendChild(b);
+        });
+
+        li.appendChild(meta);
+        li.appendChild(btns);
+        li.appendChild(row);
+        listEl.appendChild(li);
+      });
+    }).catch(function () {
+      libEmpty.hidden = false;
+      libEmpty.textContent = 'Không đọc được thư viện. Trình duyệt này có thể đang chặn lưu trữ.';
+    });
+  }
+
+  function gameId(f, system) { return system + '|' + f.name + '|' + f.size; }
+
+  /* ---------- thêm file mới và chơi ---------- */
+  playBtn.addEventListener('click', function () {
+    var f = rom.files[0];
+    if (!f) return;
+    var id = gameId(f, sys.value);
+    var rec = { id: id, name: f.name.replace(/\.[^.]+$/, ''), system: sys.value, size: f.size, blob: f, added: Date.now(), lastPlayed: Date.now() };
+    dbGet('games', id).then(function (old) {
+      if (old) rec.added = old.added;
+      return dbPut('games', rec).catch(function () { say('Không lưu được game vào thư viện, vẫn chơi được lần này.'); });
+    }).then(function () { return statesOf(id).catch(function () { return {}; }); })
+      .then(function (map) { launch(rec, latestSlot(map)); });
+  });
+
+  /* ---------- mã cheat ---------- */
+  var CONTRA_PRESET = [
+    { name: 'Vô hạn mạng', code: 'SZEIUZVI' },
+    { name: 'Bắt đầu với mạng vô hạn', code: 'SLAIUZ' },
+    { name: 'Chết thì được thêm 1 mạng', code: 'NYAIUZ' },
+    { name: 'Chơi 2 người: cả hai bắt đầu 30 mạng', code: 'IPVGZGZE' }
+  ];
+
+  function normCode(c) {
+    c = (c || '').trim();
+    return /^[A-Za-z+\s-]+$/.test(c) ? c.toUpperCase().replace(/\s+/g, '') : c;
+  }
+
+  function loadCheats(gid) {
+    return dbGet('cheats', gid).then(function (r) { cheats = (r && r.list) || []; }).catch(function () { cheats = []; }).then(renderCheats);
+  }
+  function persistCheats() {
+    if (!current) return Promise.resolve();
+    return dbPut('cheats', { id: current.id, list: cheats }).catch(function () { say('Không lưu được mã cheat.'); });
+  }
+
+  function applyCheats(quiet) {
+    if (!started) return;
+    var e = emu();
+    var on = cheats.filter(function (c) { return c.on; }).length;
+    if (!e || !e.gameManager || !e.gameManager.setCheat) {
+      if (on || !quiet) say('Không bật được mã lúc này, thử lại sau vài giây.');
+      return;
+    }
+    try {
+      if (e.gameManager.resetCheat) e.gameManager.resetCheat();
+      cheats.forEach(function (c, i) { if (c.on) e.gameManager.setCheat(i, 1, c.code); });
+      if (!quiet || on) say(on ? 'Đã bật ' + on + ' mã cheat.' : 'Đã tắt hết mã cheat.', true);
+    } catch (err) {
+      say('Trình giả lập không nhận mã này. Kiểm tra lại mã có đúng bản game không.');
+    }
+  }
+
+  function renderCheats() {
+    cheatList.textContent = '';
+    cheats.forEach(function (c, i) {
+      var li = document.createElement('li');
+      var lab = document.createElement('label');
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = !!c.on;
+      cb.addEventListener('change', function () {
+        c.on = cb.checked;
+        persistCheats();
+        applyCheats(false);
+      });
+      var nm = document.createElement('span');
+      nm.textContent = c.name;
+      lab.appendChild(cb);
+      lab.appendChild(nm);
+      var code = document.createElement('span');
+      code.className = 'code';
+      code.textContent = c.code;
+      var del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'danger';
+      del.textContent = 'Xóa';
+      del.addEventListener('click', function () {
+        cheats.splice(i, 1);
+        persistCheats();
+        renderCheats();
+        applyCheats(false);
+      });
+      li.appendChild(lab);
+      li.appendChild(code);
+      li.appendChild(del);
+      cheatList.appendChild(li);
+    });
+    var isContra = current && current.system === 'nes' && /contra/i.test(current.name || '') && !/super|spirits|force|hard|operation/i.test(current.name || '');
+    cheatPreset.hidden = !isContra;
+  }
+
+  function addCheat(name, code, on) {
+    code = normCode(code);
+    if (!code) return false;
+    if (cheats.some(function (c) { return c.code === code; })) return false;
+    cheats.push({ name: (name || '').trim() || code, code: code, on: !!on });
+    return true;
+  }
+
+  cheatAdd.addEventListener('click', function () {
+    if (!current) { say('Hãy mở một game trước khi thêm mã.'); return; }
+    if (!cheatCode.value.trim()) { say('Nhập mã cheat trước.'); return; }
+    if (!addCheat(cheatName.value, cheatCode.value, true)) { say('Mã này đã có trong danh sách.'); return; }
+    cheatName.value = ''; cheatCode.value = '';
+    persistCheats();
+    renderCheats();
+    applyCheats(false);
+  });
+  cheatPreset.addEventListener('click', function () {
+    var added = 0;
+    CONTRA_PRESET.forEach(function (p) { if (addCheat(p.name, p.code, p.code === 'SZEIUZVI')) added++; });
+    persistCheats();
+    renderCheats();
+    applyCheats(false);
+    say(added ? 'Đã thêm ' + added + ' mã gợi ý, đang bật Vô hạn mạng. Bật thêm mã khác nếu muốn.' : 'Các mã gợi ý đã có sẵn.', true);
+  });
+
+  /* ---------- chạy game ---------- */
+  function cleanup() {
+    urls.forEach(function (u) { URL.revokeObjectURL(u); });
+    urls = [];
+  }
+  function esc(s) { return JSON.stringify(s).replace(/</g, '\\u003c'); }
+
+  function emu() {
+    try { return frame && frame.contentWindow && frame.contentWindow.EJS_emulator; } catch (e) { return null; }
+  }
+
+  function refreshSlotSelect() {
+    var sel = slotSel.value || '1';
+    var p = current ? statesOf(current.id).catch(function () { return {}; }) : Promise.resolve({});
+    p.then(function (map) {
+      slotSel.textContent = '';
+      MANUAL.forEach(function (n) {
+        var o = document.createElement('option');
+        o.value = n;
+        o.textContent = 'Ô ' + n + (map[n] ? ' · ' + fmtShort(map[n].savedAt) : ' · trống');
+        slotSel.appendChild(o);
+      });
+      slotSel.value = sel;
+    });
+  }
+
+  /* slot: 'auto' hoặc '1'..'5' */
+  function saveState(slot, manual) {
+    if (!started || !current) return Promise.resolve();
+    if (slot === 'auto' && autoBlocked) return Promise.resolve();
+    var e = emu();
+    var data = null;
+    if (e && e.gameManager && e.gameManager.getState) {
+      try { data = e.gameManager.getState(); } catch (err) { data = null; }
+    }
+    if (!data || !data.length) {
+      if (manual) say('Không lưu được lúc này, thử lại sau vài giây.');
+      return Promise.resolve();
+    }
+    var gid = current.id;
+    var copy = new Uint8Array(data);
+    return dbPut('states', { id: skey(gid, slot), gameId: gid, slot: slot, state: copy, savedAt: Date.now() }).then(function () {
+      var t = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      say((manual ? 'Đã lưu vào ' + slotName(slot) + ' lúc ' : 'Tự động lưu lúc ') + t, true);
+      if (manual) refreshSlotSelect();
+    }).catch(function () { say('Không ghi được điểm lưu. Bộ nhớ máy có thể đã đầy.'); });
+  }
+
+  function getSlotRec(gid, slot) {
+    return dbGet('states', skey(gid, slot)).then(function (r) {
+      if (r || slot !== 'auto') return r;
+      return dbGet('states', gid);
+    });
+  }
+
+  function loadSlot(slot, auto) {
+    if (!current || !started) return;
+    var id = current.id;
+    getSlotRec(id, slot).then(function (st) {
+      if (!current || current.id !== id) return;
+      if (!st) { say(slotName(slot) + ' đang trống.'); return; }
+      var e = emu();
+      if (!e || !e.gameManager || !e.gameManager.loadState) {
+        if (auto) autoBlocked = true;
+        say('Không nạp được điểm lưu. Tự động lưu tạm tắt để không ghi đè, bấm Lưu vào ô nếu muốn lưu.');
+        return;
+      }
+      try {
+        e.gameManager.loadState(st.state);
+        autoBlocked = false;
+        say('Đã vào lại ' + slotName(slot) + ' lúc ' + fmtDate(st.savedAt), true);
+      } catch (err) {
+        if (auto) autoBlocked = true;
+        say('Không nạp được điểm lưu. Tự động lưu tạm tắt để không ghi đè, bấm Lưu vào ô nếu muốn lưu.');
+      }
+    }).catch(function () {});
+  }
+
+  /* iframe gọi hàm này khi game đã chạy */
+  window.__retroStarted = function () {
+    started = true;
+    saveBtn.disabled = false;
+    loadBtn.disabled = false;
+    slotSel.disabled = false;
+    refreshSlotSelect();
+    if (current && current.resume) {
+      autoBlocked = true;
+      setTimeout(function () { loadSlot(current && current.resume, true); }, 1500);
+    } else {
+      autoBlocked = false;
+    }
+    setTimeout(function () { applyCheats(true); }, 2600);
+    clearInterval(timer);
+    timer = setInterval(function () { saveState('auto', false); }, 15000);
+  };
+
+  function teardown() {
+    clearInterval(timer);
+    timer = null;
+    if (frame) { frame.remove(); frame = null; }
+    cleanup();
+    started = false;
+    current = null;
+    autoBlocked = false;
+    stopBtn.disabled = true;
+    fullBtn.disabled = true;
+    saveBtn.disabled = true;
+    loadBtn.disabled = true;
+    slotSel.disabled = true;
+    cheats = [];
+    cheatsBox.hidden = true;
+  }
+
+  function stopNoSave() {
+    teardown();
+    stage.innerHTML = '<p class="empty">Đã dừng. Chọn game trong thư viện để chơi tiếp.</p>';
+    return Promise.resolve();
+  }
+
+  function stop() {
+    return saveState('auto', false).then(function () {
+      teardown();
+      stage.innerHTML = '<p class="empty">Đã dừng và lưu tiến trình. Chọn game trong thư viện để chơi tiếp.</p>';
+      renderLibrary();
+    });
+  }
+
+  /* resume: tên ô cần nạp ('auto', '1'..'5') hoặc null nếu chơi mới */
+  function launch(g, resume) {
+    var prior = frame ? stop() : Promise.resolve();
+    prior.then(function () {
+      return g.system === 'psx' ? dbGet('bios', 'psx').catch(function () { return null; }) : null;
+    }).then(function (b) {
+      var biosBlob = b && b.blob ? b.blob : (g.system === 'psx' && bios.files[0] ? bios.files[0] : null);
+      var romUrl = URL.createObjectURL(g.blob);
+      urls.push(romUrl);
+      var biosUrl = '';
+      if (biosBlob) { biosUrl = URL.createObjectURL(biosBlob); urls.push(biosUrl); }
+
+      current = { id: g.id, resume: resume || null, system: g.system, name: g.name };
+      cheatsBox.hidden = false;
+      loadCheats(g.id);
+      started = false;
+      autoBlocked = !!resume;
+      g.lastPlayed = Date.now();
+      dbPut('games', g).catch(function () {});
+
+      var doc = '<!doctype html><html><head><meta charset="utf-8">' +
+        '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+        '<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}#game{width:100%;height:100%}</style></head><body>' +
+        '<div id="game"></div><script>' +
+        'EJS_player="#game";' +
+        'EJS_core=' + esc(g.system) + ';' +
+        'EJS_gameUrl=' + esc(romUrl) + ';' +
+        'EJS_gameName=' + esc(g.name) + ';' +
+        (biosUrl ? 'EJS_biosUrl=' + esc(biosUrl) + ';' : '') +
+        'EJS_pathtodata=' + esc(CDN) + ';' +
+        'EJS_color="#fc7460";' +
+        'EJS_startOnLoaded=true;' +
+        'EJS_language="vi-VN";' +
+        'EJS_onGameStart=function(){try{parent.__retroStarted()}catch(e){}};' +
+        '<\/script><script src="' + CDN + 'loader.js"><\/script></body></html>';
+
+      frame = document.createElement('iframe');
+      frame.setAttribute('allow', 'autoplay; fullscreen; gamepad');
+      frame.setAttribute('allowfullscreen', '');
+      frame.title = 'Màn hình game';
+      stage.innerHTML = '';
+      stage.appendChild(frame);
+      frame.srcdoc = doc;
+      stopBtn.disabled = false;
+      fullBtn.disabled = false;
+      say(resume ? 'Đang mở game, sẽ vào lại ' + slotName(resume) + '...' : 'Đang mở game...');
+      refreshSlotSelect();
+      stage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  saveBtn.addEventListener('click', function () { saveState(slotSel.value || '1', true); });
+  loadBtn.addEventListener('click', function () { loadSlot(slotSel.value || '1', false); });
+  stopBtn.addEventListener('click', stop);
+  fullBtn.addEventListener('click', function () {
+    var fn = stage.requestFullscreen || stage.webkitRequestFullscreen;
+    if (fn) { try { fn.call(stage); } catch (e) {} }
+  });
+
+  /* lưu khi rời app, khóa máy, đóng trang */
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') saveState('auto', false);
+  });
+  window.addEventListener('pagehide', function () { saveState('auto', false); });
+
+  refreshSlotSelect();
+  renderLibrary();
+})();
+</script>
+</body>
+</html>

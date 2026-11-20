@@ -1,0 +1,9 @@
+{
+  "appId": "com.retroplayer.app",
+  "appName": "Retro Player",
+  "webDir": "www",
+  "backgroundColor": "#0e0f1a",
+  "android": {
+    "allowMixedContent": false
+  }
+}
