@@ -92,6 +92,8 @@
   .rb { width: 54px; height: 54px; padding: 0; border-radius: 50%; border: 0; background: var(--red); color: #fff; font-weight: 700; font-size: 15px; box-shadow: 0 3px 0 var(--red-down); }
   .rb.on { background: var(--red-down); box-shadow: none; transform: translateY(3px); }
   .rb.ab { grid-column: 1 / 3; width: 84px; height: 38px; border-radius: 19px; font-size: 13px; }
+  .fsexit { display: none; }
+  .player.fs .fsexit { display: block; position: absolute; z-index: 5; top: calc(10px + env(safe-area-inset-top, 0px)); right: calc(10px + env(safe-area-inset-right, 0px)); background: rgba(0, 0, 0, 0.6); color: #fff; border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 18px; padding: 8px 14px; font-size: 13px; font-weight: 600; opacity: 0.85; }
   .player.fs { background: #000; position: relative; gap: 0; justify-content: center; }
   .player.fs .stage { flex: 1; min-height: 0; max-height: none; aspect-ratio: auto; border: 0; border-radius: 0; }
   .player.fs .pad8.on { position: absolute; left: 0; right: 0; bottom: 0; background: transparent; border: 0; opacity: 0.7; padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); pointer-events: none; }
@@ -179,6 +181,7 @@
     <div class="stage" id="stage">
       <p class="empty">Chưa có game nào đang chạy. Chọn game trong thư viện hoặc thêm file mới ở trên.</p>
     </div>
+    <button type="button" class="fsexit" id="fsExit" aria-label="Thoát toàn màn hình">✕ Thoát toàn màn hình</button>
     <div class="pad8" id="pad8" aria-label="Tay cầm cảm ứng">
       <div class="dpad8" id="dpad8" aria-label="Phím di chuyển 8 hướng"><div class="knob" id="knob"></div></div>
       <div class="mid8">
@@ -205,6 +208,7 @@
         <textarea id="answerIn" placeholder="2. Dán mã trả lời của điện thoại thứ hai vào đây" aria-label="Mã trả lời" autocomplete="off" spellcheck="false"></textarea>
         <div class="row"><button type="button" class="primary" id="hostConnect">3. Kết nối</button><button type="button" class="ghost" id="hostDrop" hidden>Ngắt kết nối</button></div>
         <div class="st" id="hostStatus" role="status"></div>
+        <div class="st" id="p2Debug" aria-live="off"></div>
       </div>
       <div class="twop-col">
         <h3>Điện thoại thứ hai (làm tay cầm)</h3>
@@ -253,7 +257,7 @@
     <h2>Chơi 2 người</h2>
     <ul>
       <li>Máy chính bấm 1. Tạo mã mời rồi gửi mã cho điện thoại thứ hai. Điện thoại thứ hai dán mã, bấm 2. Tạo mã trả lời rồi gửi mã đó lại. Máy chính dán mã trả lời và bấm 3. Kết nối. Điện thoại thứ hai sẽ tự chuyển thành tay cầm toàn màn hình.</li>
-      <li>Trong Contra, người chơi 2 bấm Start trên tay cầm của mình để vào game. Nếu hai máy không kết nối được, thử cùng bật Wi-Fi một mạng, hoặc để một máy phát Wi-Fi cho máy kia.</li>
+      <li>Trong Contra, ở màn hình tiêu đề bấm Select (trên máy chính) để chuyển từ 1 PLAYER sang 2 PLAYERS rồi bấm Start. Nếu chọn 1 PLAYER thì người chơi 2 không có nhân vật để điều khiển. Nếu hai máy không kết nối được, thử cùng bật Wi-Fi một mạng, hoặc để một máy phát Wi-Fi cho máy kia.</li>
     </ul>
     <h2>Điều khiển</h2>
     <ul>
@@ -812,15 +816,25 @@
     });
     remoteHeld = {};
   }
+  var P2_NAMES = { 0: 'B', 2: 'Select', 3: 'Start', 4: 'Lên', 5: 'Xuống', 6: 'Trái', 7: 'Phải', 8: 'A' };
+  var p2Count = 0, p2Info = '', p2Raf = 0;
+  function showP2Debug() {
+    p2Raf = 0;
+    st($('p2Debug'), 'Đã nhận ' + p2Count + ' lệnh phím từ người chơi 2. ' + p2Info);
+  }
   function onRemoteInput(msg) {
     var p = String(msg).split(',');
     var id = +p[0], v = +p[1] ? 1 : 0;
     if (!P2_IDS[id]) return;
     remoteHeld[id] = v;
     var e = emu();
-    if (e && e.gameManager && e.gameManager.simulateInput) {
-      try { e.gameManager.simulateInput(1, id, v); } catch (err) {}
+    var ok = !!(e && e.gameManager && e.gameManager.simulateInput);
+    if (ok) {
+      try { e.gameManager.simulateInput(1, id, v); } catch (err) { ok = false; }
     }
+    p2Count++;
+    p2Info = 'Phím cuối: ' + P2_NAMES[id] + (v ? ' (nhấn)' : ' (thả)') + (ok ? '.' : '. Chưa có game đang chạy trên máy chính nên chưa chuyển vào game được.');
+    if (!p2Raf) p2Raf = requestAnimationFrame(showP2Debug);
   }
   function hostClose() {
     releaseP2();
@@ -830,6 +844,8 @@
   $('hostInvite').addEventListener('click', function () {
     if (!window.RTCPeerConnection) { st(hostStatusEl, 'Trình duyệt này không hỗ trợ kết nối giữa hai máy.'); return; }
     hostClose();
+    p2Count = 0; p2Info = '';
+    st($('p2Debug'), '');
     offerOut.value = '';
     st(hostStatusEl, 'Đang tạo mã mời, đợi vài giây...');
     var pc = new RTCPeerConnection({ iceServers: ICE });
@@ -838,7 +854,7 @@
     hostPeer = peer;
     dc.onopen = function () {
       hostDrop.hidden = false;
-      st(hostStatusEl, 'Người chơi 2 đã kết nối. Bấm Start trên tay cầm của họ để vào game.', true);
+      st(hostStatusEl, 'Người chơi 2 đã kết nối. Trong game, chọn 2 PLAYERS ở màn hình tiêu đề rồi bấm Start.', true);
     };
     dc.onclose = function () {
       if (hostPeer !== peer) return;
@@ -867,8 +883,12 @@
 
   /* ----- điện thoại thứ hai ----- */
   function enterGuest() {
+    var sent = 0, bar = $('guestBarText');
+    bar.textContent = 'Tay cầm người chơi 2 · đã kết nối';
     remoteSend = function (id, v) {
-      if (guestPeer && guestPeer.dc.readyState === 'open') { try { guestPeer.dc.send(id + ',' + v); } catch (e) {} }
+      if (guestPeer && guestPeer.dc.readyState === 'open') {
+        try { guestPeer.dc.send(id + ',' + v); sent++; bar.textContent = 'Tay cầm người chơi 2 · đã gửi ' + sent + ' lệnh'; } catch (e) {}
+      }
     };
     guestWrap.appendChild(pad8);
     pad8.classList.add('on');
@@ -1039,6 +1059,7 @@
     cheats = [];
     cheatsBox.hidden = true;
     applyPadMode();
+    exitFs();
   }
 
   function stopNoSave() {
@@ -1122,6 +1143,11 @@
       } catch (e) {}
     }
   });
+  function exitFs() {
+    var fn = document.exitFullscreen || document.webkitExitFullscreen;
+    if (fn && (document.fullscreenElement || document.webkitFullscreenElement)) { try { fn.call(document); } catch (e) {} }
+  }
+  $('fsExit').addEventListener('click', exitFs);
   function fsChange() {
     var el = document.fullscreenElement || document.webkitFullscreenElement;
     playerEl.classList.toggle('fs', el === playerEl);
