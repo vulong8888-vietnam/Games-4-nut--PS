@@ -18,6 +18,9 @@
     --accent: #fc7460;
     --accent-ink: #1a0c09;
     --ok: #58d854;
+    --red: #c8202a;
+    --red-down: #8f1219;
+    --key: #14141a;
     color-scheme: dark;
   }
   * { box-sizing: border-box; }
@@ -71,6 +74,49 @@
   #slot { width: auto; padding: 9px 10px; }
   .danger { background: transparent; color: var(--muted); border: 1px solid var(--line); }
 
+  .player { display: flex; flex-direction: column; gap: 12px; }
+  .chk { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--fg); text-transform: none; letter-spacing: 0; cursor: pointer; }
+  .chk input { width: 18px; height: 18px; accent-color: var(--accent); }
+  .pad8 { display: none; background: #cfcac0; border-bottom: 4px solid #a9a499; border-radius: 10px; padding: 14px; grid-template-columns: auto auto; justify-content: space-between; align-items: center; gap: 12px 10px; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: none; }
+  .pad8.on { display: grid; }
+  .pad8 button { touch-action: none; -webkit-tap-highlight-color: transparent; }
+  .dpad8 { position: relative; width: 136px; height: 136px; border-radius: 50%; background: var(--key); touch-action: none; }
+  .dpad8 .knob { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; margin: -23px 0 0 -23px; border-radius: 50%; background: #3a3a48; pointer-events: none; }
+  .dpad8 i { position: absolute; left: 50%; top: 50%; width: 0; height: 0; margin: -5px 0 0 -7px; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 11px solid #55556a; transform: rotate(var(--a)) translateY(-55px); pointer-events: none; }
+  .dpad8 i.on { border-bottom-color: var(--accent); }
+  .mid8 { grid-column: 1 / 3; grid-row: 2; display: flex; justify-content: center; gap: 22px; }
+  .pill8 { display: flex; flex-direction: column; align-items: center; gap: 5px; color: #26262c; font-size: 9px; font-weight: 700; letter-spacing: 0.04em; }
+  .pill8 button { width: 38px; height: 12px; border-radius: 6px; border: 0; background: var(--red); padding: 0; }
+  .pill8 button.on { background: var(--red-down); }
+  .abgrp { display: grid; grid-template-columns: auto auto; gap: 10px 12px; justify-items: center; align-items: center; background: #26262c; border-radius: 8px; padding: 10px 12px; }
+  .rb { width: 54px; height: 54px; padding: 0; border-radius: 50%; border: 0; background: var(--red); color: #fff; font-weight: 700; font-size: 15px; box-shadow: 0 3px 0 var(--red-down); }
+  .rb.on { background: var(--red-down); box-shadow: none; transform: translateY(3px); }
+  .rb.ab { grid-column: 1 / 3; width: 84px; height: 38px; border-radius: 19px; font-size: 13px; }
+  .player.fs { background: #000; position: relative; gap: 0; justify-content: center; }
+  .player.fs .stage { flex: 1; min-height: 0; max-height: none; aspect-ratio: auto; border: 0; border-radius: 0; }
+  .player.fs .pad8.on { position: absolute; left: 0; right: 0; bottom: 0; background: transparent; border: 0; opacity: 0.7; padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); pointer-events: none; }
+  .player.fs .pad8.on > * { pointer-events: auto; }
+  @media (max-width: 380px) {
+    .dpad8 { width: 116px; height: 116px; }
+    .dpad8 i { transform: rotate(var(--a)) translateY(-46px); }
+    .rb { width: 46px; height: 46px; }
+    .rb.ab { width: 72px; height: 34px; }
+    .pad8 { padding: 10px; }
+  }
+  .twop { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 12px; }
+  .twop-cols { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .twop-col { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+  .twop-col h3 { margin: 0; font-size: 14px; }
+  .twop textarea { width: 100%; min-height: 64px; resize: vertical; background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; font: 12px/1.4 ui-monospace, Consolas, monospace; word-break: break-all; }
+  .twop .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .twop .row button { padding: 8px 14px; font-size: 14px; }
+  .twop .st { font-size: 13px; color: var(--muted); min-height: 1.3em; }
+  .twop .st.ok { color: var(--ok); }
+  .guestwrap { position: fixed; inset: 0; z-index: 50; background: var(--bg); display: flex; flex-direction: column; justify-content: center; gap: 16px; padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left)); }
+  .guestwrap[hidden] { display: none; }
+  .guestbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .guestbar span { font-weight: 600; color: var(--ok); }
+  .guestwrap .pad8 { width: 100%; max-width: 560px; margin: 0 auto; }
   .cheats { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: grid; gap: 10px; }
   .cheatlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
   .cheatlist li { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
@@ -125,12 +171,51 @@
     <button class="ghost" id="loadSlot" disabled>Nạp ô</button>
     <button class="ghost" id="stop" disabled>Dừng</button>
     <button class="ghost" id="full" disabled>Toàn màn hình</button>
+    <label class="chk" for="useMyPad"><input type="checkbox" id="useMyPad" checked> Tay cầm 8 hướng của app</label>
     <span class="status" id="status" role="status" aria-live="polite"></span>
   </div>
 
-  <div class="stage" id="stage">
-    <p class="empty">Chưa có game nào đang chạy. Chọn game trong thư viện hoặc thêm file mới ở trên.</p>
+  <div class="player" id="player">
+    <div class="stage" id="stage">
+      <p class="empty">Chưa có game nào đang chạy. Chọn game trong thư viện hoặc thêm file mới ở trên.</p>
+    </div>
+    <div class="pad8" id="pad8" aria-label="Tay cầm cảm ứng">
+      <div class="dpad8" id="dpad8" aria-label="Phím di chuyển 8 hướng"><div class="knob" id="knob"></div></div>
+      <div class="mid8">
+        <div class="pill8"><button type="button" data-hold="SELECT" aria-label="Select"></button>SELECT</div>
+        <div class="pill8"><button type="button" data-hold="START" aria-label="Start"></button>START</div>
+      </div>
+      <div class="abgrp">
+        <button type="button" class="rb ab" data-hold="AB" aria-label="A và B cùng lúc">A+B</button>
+        <button type="button" class="rb" data-hold="B" aria-label="Nút B">B</button>
+        <button type="button" class="rb" data-hold="A" aria-label="Nút A">A</button>
+      </div>
+    </div>
   </div>
+
+  <section class="twop" aria-label="Chơi 2 người">
+    <h2>Chơi 2 người bằng 2 điện thoại</h2>
+    <p class="muted">Game chạy trên máy chính. Điện thoại thứ hai làm tay cầm cho người chơi 2, hai máy ghép nối bằng cách gửi qua lại hai mã ngắn qua Zalo hoặc Messenger. Cả hai cùng nhìn màn hình của máy chính, tốt nhất là chiếu lên TV.</p>
+    <div class="twop-cols">
+      <div class="twop-col">
+        <h3>Máy chính (có game)</h3>
+        <div class="row"><button type="button" class="primary" id="hostInvite">1. Tạo mã mời</button></div>
+        <textarea id="offerOut" readonly placeholder="Mã mời sẽ hiện ở đây. Bấm Sao chép rồi gửi cho điện thoại thứ hai." aria-label="Mã mời"></textarea>
+        <div class="row"><button type="button" class="ghost" id="offerCopy">Sao chép mã mời</button></div>
+        <textarea id="answerIn" placeholder="2. Dán mã trả lời của điện thoại thứ hai vào đây" aria-label="Mã trả lời" autocomplete="off" spellcheck="false"></textarea>
+        <div class="row"><button type="button" class="primary" id="hostConnect">3. Kết nối</button><button type="button" class="ghost" id="hostDrop" hidden>Ngắt kết nối</button></div>
+        <div class="st" id="hostStatus" role="status"></div>
+      </div>
+      <div class="twop-col">
+        <h3>Điện thoại thứ hai (làm tay cầm)</h3>
+        <textarea id="offerIn" placeholder="1. Dán mã mời của máy chính vào đây" aria-label="Mã mời nhận được" autocomplete="off" spellcheck="false"></textarea>
+        <div class="row"><button type="button" class="primary" id="guestJoin">2. Tạo mã trả lời</button></div>
+        <textarea id="answerOut" readonly placeholder="Mã trả lời sẽ hiện ở đây. Bấm Sao chép rồi gửi lại cho máy chính." aria-label="Mã trả lời"></textarea>
+        <div class="row"><button type="button" class="ghost" id="answerCopy">Sao chép mã trả lời</button></div>
+        <div class="st" id="guestStatus2" role="status"></div>
+      </div>
+    </div>
+  </section>
 
   <section class="cheats" id="cheatsBox" aria-label="Mã cheat" hidden>
     <h2>Thêm mạng và mẹo cho game đang chơi</h2>
@@ -165,13 +250,23 @@
       <li>Khi đang chơi, mục "Thêm mạng và mẹo" hiện ra bên dưới màn hình. Nhập mã Game Genie của game rồi bật công tắc. Mã đúng với từng bản game (bản Mỹ, bản Nhật có mã khác nhau).</li>
       <li>Contra bản Mỹ có sẵn nút thêm mã gợi ý. Ngoài ra Contra có mật mã 30 mạng không cần cheat: ở màn hình tiêu đề bấm Lên, Lên, Xuống, Xuống, Trái, Phải, Trái, Phải, B, A rồi Start.</li>
     </ul>
+    <h2>Chơi 2 người</h2>
+    <ul>
+      <li>Máy chính bấm 1. Tạo mã mời rồi gửi mã cho điện thoại thứ hai. Điện thoại thứ hai dán mã, bấm 2. Tạo mã trả lời rồi gửi mã đó lại. Máy chính dán mã trả lời và bấm 3. Kết nối. Điện thoại thứ hai sẽ tự chuyển thành tay cầm toàn màn hình.</li>
+      <li>Trong Contra, người chơi 2 bấm Start trên tay cầm của mình để vào game. Nếu hai máy không kết nối được, thử cùng bật Wi-Fi một mạng, hoặc để một máy phát Wi-Fi cho máy kia.</li>
+    </ul>
     <h2>Điều khiển</h2>
     <ul>
-      <li>Trên điện thoại, nút cảm ứng hiện ngay trên màn hình game. Trên máy tính dùng bàn phím hoặc tay cầm USB/Bluetooth, đổi phím trong menu bánh răng của trình giả lập.</li>
+      <li>NES, Game Boy và Master System dùng tay cầm của app ngay dưới màn hình: phím tròn di chuyển 8 hướng (chéo được), nút A, nút B, nút A+B bấm cả hai cùng lúc, Select và Start. Bỏ chọn "Tay cầm 8 hướng của app" nếu muốn dùng tay cầm mặc định của trình giả lập. Các hệ máy khác luôn dùng tay cầm mặc định.</li>
+      <li>Trên điện thoại, nút cảm ứng của trình giả lập hiện ngay trên màn hình game. Trên máy tính dùng bàn phím hoặc tay cầm USB/Bluetooth, đổi phím trong menu bánh răng của trình giả lập.</li>
       <li>PS1: nên dùng file <code>.chd</code>, <code>.pbp</code> hoặc <code>.iso</code>. Game dạng <code>.cue</code> kèm nhiều file <code>.bin</code> hãy nén chung vào một file <code>.zip</code>.</li>
     </ul>
     <p class="muted">Chỉ dùng game và BIOS mà bạn sở hữu hợp pháp. Trình giả lập tải từ cdn.emulatorjs.org, nên cần có mạng lần đầu mở app.</p>
   </section>
+</div>
+
+<div class="guestwrap" id="guestWrap" hidden>
+  <div class="guestbar"><span id="guestBarText">Tay cầm người chơi 2</span><button type="button" class="ghost" id="guestExit">Thoát</button></div>
 </div>
 
 <script>
@@ -188,6 +283,7 @@
   var statusEl = $('status'), listEl = $('games'), libEmpty = $('libEmpty');
   var cheatsBox = $('cheatsBox'), cheatList = $('cheatList'), cheatName = $('cheatName'), cheatCode = $('cheatCode'), cheatAdd = $('cheatAdd'), cheatPreset = $('cheatPreset');
   var cheats = [];
+  var playerEl = $('player'), pad8 = $('pad8'), dpad8 = $('dpad8'), knob = $('knob'), useMyPad = $('useMyPad');
 
   var urls = [], frame = null, current = null, started = false, timer = null, autoBlocked = false;
 
@@ -549,6 +645,287 @@
     say(added ? 'Đã thêm ' + added + ' mã gợi ý, đang bật Vô hạn mạng. Bật thêm mã khác nếu muốn.' : 'Các mã gợi ý đã có sẵn.', true);
   });
 
+  /* ---------- tay cầm 8 hướng ---------- */
+  var PAD_SYSTEMS = { nes: 1, gb: 1, segaMS: 1 };
+  var BTN_IDS = { A: [8], B: [0], AB: [8, 0], SELECT: [2], START: [3] };
+  var holds = {}, dirOn = { 4: 0, 5: 0, 6: 0, 7: 0 };
+  var remoteSend = null;   /* khác null khi máy này đang làm tay cầm người chơi 2 */
+
+  try { if (localStorage.getItem('retro-mypad') === '0') useMyPad.checked = false; } catch (e) {}
+
+  function setHold(id, delta) {
+    holds[id] = Math.max(0, (holds[id] || 0) + delta);
+    var v = holds[id] > 0 ? 1 : 0;
+    if (remoteSend) { remoteSend(id, v); return; }
+    var e = emu();
+    if (e && e.gameManager && e.gameManager.simulateInput) {
+      try { e.gameManager.simulateInput(0, id, v); } catch (err) {}
+    }
+  }
+
+  /* các mũi tên quanh phím tròn: góc 0 là lên, theo chiều kim đồng hồ */
+  var ARROWS = [
+    { a: 0, d: [4] }, { a: 45, d: [4, 7] }, { a: 90, d: [7] }, { a: 135, d: [5, 7] },
+    { a: 180, d: [5] }, { a: 225, d: [5, 6] }, { a: 270, d: [6] }, { a: 315, d: [4, 6] }
+  ];
+  ARROWS.forEach(function (ar) {
+    var i = document.createElement('i');
+    i.style.setProperty('--a', ar.a + 'deg');
+    ar.el = i;
+    dpad8.insertBefore(i, knob);
+  });
+
+  function setDir(want) {
+    [4, 5, 6, 7].forEach(function (id) {
+      var w = want[id] ? 1 : 0;
+      if (w !== dirOn[id]) { setHold(id, w ? 1 : -1); dirOn[id] = w; }
+    });
+    var n = [4, 5, 6, 7].filter(function (id) { return dirOn[id]; }).length;
+    ARROWS.forEach(function (ar) {
+      ar.el.classList.toggle('on', n === ar.d.length && ar.d.every(function (id) { return dirOn[id]; }));
+    });
+  }
+
+  function dirFromEvent(ev) {
+    var r = dpad8.getBoundingClientRect();
+    var rad = r.width / 2;
+    var dx = ev.clientX - (r.left + rad), dy = ev.clientY - (r.top + r.height / 2);
+    var d = Math.sqrt(dx * dx + dy * dy);
+    var want = { 4: 0, 5: 0, 6: 0, 7: 0 };
+    var kx = 0, ky = 0;
+    if (d > rad * 0.22) {
+      /* chia vòng tròn thành 8 phần bằng nhau, mỗi phần 45 độ */
+      var sec = (Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) + 8) % 8;   /* 0 phải, 1 phải-xuống, 2 xuống, 3 trái-xuống, 4 trái, 5 trái-lên, 6 lên, 7 phải-lên */
+      if (sec === 0 || sec === 1 || sec === 7) want[7] = 1;
+      if (sec === 1 || sec === 2 || sec === 3) want[5] = 1;
+      if (sec === 3 || sec === 4 || sec === 5) want[6] = 1;
+      if (sec === 5 || sec === 6 || sec === 7) want[4] = 1;
+      var k = Math.min(d, rad * 0.38);
+      kx = dx / d * k; ky = dy / d * k;
+    }
+    knob.style.transform = 'translate(' + kx + 'px,' + ky + 'px)';
+    return want;
+  }
+
+  var dragging = false;
+  dpad8.addEventListener('pointerdown', function (ev) {
+    ev.preventDefault();
+    dragging = true;
+    try { dpad8.setPointerCapture(ev.pointerId); } catch (e) {}
+    setDir(dirFromEvent(ev));
+  });
+  dpad8.addEventListener('pointermove', function (ev) {
+    if (dragging) setDir(dirFromEvent(ev));
+  });
+  function dirRelease() {
+    dragging = false;
+    knob.style.transform = '';
+    setDir({ 4: 0, 5: 0, 6: 0, 7: 0 });
+  }
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (n) { dpad8.addEventListener(n, dirRelease); });
+
+  Array.prototype.forEach.call(pad8.querySelectorAll('[data-hold]'), function (btn) {
+    var ids = BTN_IDS[btn.getAttribute('data-hold')], down = false;
+    function press() { if (down) return; down = true; btn.classList.add('on'); ids.forEach(function (id) { setHold(id, 1); }); }
+    function lift() { if (!down) return; down = false; btn.classList.remove('on'); ids.forEach(function (id) { setHold(id, -1); }); }
+    btn.addEventListener('pointerdown', function (ev) {
+      ev.preventDefault();
+      try { btn.setPointerCapture(ev.pointerId); } catch (e) {}
+      press();
+    });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (n) { btn.addEventListener(n, lift); });
+  });
+  pad8.addEventListener('contextmenu', function (ev) { ev.preventDefault(); });
+
+  function releaseAll() {
+    dirRelease();
+    Array.prototype.forEach.call(pad8.querySelectorAll('[data-hold]'), function (b) {
+      b.dispatchEvent(new Event('lostpointercapture'));
+    });
+  }
+
+  function padWanted() { return !!current && !!PAD_SYSTEMS[current.system] && useMyPad.checked; }
+
+  /* hiện tay cầm của app và ẩn tay cầm mặc định của trình giả lập (hoặc ngược lại) */
+  function applyPadMode() {
+    if (remoteSend) return;
+    var show = padWanted();
+    if (!show && pad8.classList.contains('on')) releaseAll();
+    pad8.classList.toggle('on', show);
+    try {
+      var doc = frame && frame.contentDocument;
+      if (doc && doc.head) {
+        var st = doc.getElementById('ejs-hide-pad');
+        if (show && !st) {
+          st = doc.createElement('style');
+          st.id = 'ejs-hide-pad';
+          st.textContent = '.ejs_virtualGamepad_parent{display:none!important}';
+          doc.head.appendChild(st);
+        } else if (!show && st) { st.remove(); }
+      }
+    } catch (e) {}
+  }
+  useMyPad.addEventListener('change', function () {
+    try { localStorage.setItem('retro-mypad', useMyPad.checked ? '1' : '0'); } catch (e) {}
+    applyPadMode();
+  });
+
+  /* ---------- chơi 2 người bằng 2 điện thoại ---------- */
+  var ICE = [{ urls: 'stun:stun.l.google.com:19302' }];
+  var P2_IDS = { 0: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1 };
+  var hostPeer = null, guestPeer = null, remoteHeld = {}, wakeLock = null;
+  var hostStatusEl = $('hostStatus'), guestStatusEl = $('guestStatus2');
+  var offerOut = $('offerOut'), answerIn = $('answerIn'), offerIn = $('offerIn'), answerOut = $('answerOut');
+  var guestWrap = $('guestWrap'), hostDrop = $('hostDrop');
+
+  function st(el, msg, ok) { el.textContent = msg || ''; el.className = 'st' + (ok ? ' ok' : ''); }
+  function enc(o) { return 'RP1.' + btoa(unescape(encodeURIComponent(JSON.stringify(o)))); }
+  function dec(text) {
+    var t = (text || '').replace(/\s+/g, '');
+    if (t.indexOf('RP1.') !== 0) throw new Error('bad');
+    return JSON.parse(decodeURIComponent(escape(atob(t.slice(4)))));
+  }
+  function waitIce(pc) {
+    return new Promise(function (res) {
+      if (pc.iceGatheringState === 'complete') { res(); return; }
+      var timer = setTimeout(done, 4000);
+      function chk() { if (pc.iceGatheringState === 'complete') done(); }
+      function done() { clearTimeout(timer); pc.removeEventListener('icegatheringstatechange', chk); res(); }
+      pc.addEventListener('icegatheringstatechange', chk);
+    });
+  }
+  function copyBox(box, el) {
+    if (!box.value) return;
+    var fallback = function () { box.focus(); box.select(); try { document.execCommand('copy'); } catch (e) {} };
+    try {
+      navigator.clipboard.writeText(box.value).then(function () { st(el, 'Đã sao chép.', true); }, fallback);
+    } catch (e) { fallback(); }
+  }
+
+  /* ----- máy chính ----- */
+  function releaseP2() {
+    var e = emu();
+    Object.keys(remoteHeld).forEach(function (id) {
+      if (remoteHeld[id] && e && e.gameManager && e.gameManager.simulateInput) {
+        try { e.gameManager.simulateInput(1, +id, 0); } catch (err) {}
+      }
+    });
+    remoteHeld = {};
+  }
+  function onRemoteInput(msg) {
+    var p = String(msg).split(',');
+    var id = +p[0], v = +p[1] ? 1 : 0;
+    if (!P2_IDS[id]) return;
+    remoteHeld[id] = v;
+    var e = emu();
+    if (e && e.gameManager && e.gameManager.simulateInput) {
+      try { e.gameManager.simulateInput(1, id, v); } catch (err) {}
+    }
+  }
+  function hostClose() {
+    releaseP2();
+    if (hostPeer) { try { hostPeer.pc.close(); } catch (e) {} hostPeer = null; }
+    hostDrop.hidden = true;
+  }
+  $('hostInvite').addEventListener('click', function () {
+    if (!window.RTCPeerConnection) { st(hostStatusEl, 'Trình duyệt này không hỗ trợ kết nối giữa hai máy.'); return; }
+    hostClose();
+    offerOut.value = '';
+    st(hostStatusEl, 'Đang tạo mã mời, đợi vài giây...');
+    var pc = new RTCPeerConnection({ iceServers: ICE });
+    var dc = pc.createDataChannel('pad');
+    var peer = { pc: pc, dc: dc };
+    hostPeer = peer;
+    dc.onopen = function () {
+      hostDrop.hidden = false;
+      st(hostStatusEl, 'Người chơi 2 đã kết nối. Bấm Start trên tay cầm của họ để vào game.', true);
+    };
+    dc.onclose = function () {
+      if (hostPeer !== peer) return;
+      releaseP2();
+      hostDrop.hidden = true;
+      st(hostStatusEl, 'Người chơi 2 đã ngắt kết nối.');
+    };
+    dc.onmessage = function (ev) { onRemoteInput(ev.data); };
+    pc.createOffer().then(function (o) { return pc.setLocalDescription(o); }).then(function () { return waitIce(pc); }).then(function () {
+      offerOut.value = enc({ t: 'o', s: pc.localDescription.sdp });
+      st(hostStatusEl, 'Đã tạo mã mời. Sao chép và gửi cho điện thoại thứ hai, rồi dán mã trả lời vào ô bên dưới.', true);
+    }).catch(function () { st(hostStatusEl, 'Không tạo được mã mời. Thử lại.'); });
+  });
+  $('offerCopy').addEventListener('click', function () { copyBox(offerOut, hostStatusEl); });
+  $('hostConnect').addEventListener('click', function () {
+    if (!hostPeer) { st(hostStatusEl, 'Bấm Tạo mã mời trước.'); return; }
+    var d;
+    try { d = dec(answerIn.value); if (d.t !== 'a') throw new Error('bad'); }
+    catch (e) { st(hostStatusEl, 'Mã trả lời không đúng. Hãy dán lại đủ cả mã, bắt đầu bằng RP1.'); return; }
+    st(hostStatusEl, 'Đang kết nối...');
+    hostPeer.pc.setRemoteDescription({ type: 'answer', sdp: d.s }).catch(function () {
+      st(hostStatusEl, 'Mã trả lời không khớp với mã mời hiện tại. Tạo mã mời mới và làm lại.');
+    });
+  });
+  hostDrop.addEventListener('click', function () { hostClose(); st(hostStatusEl, 'Đã ngắt kết nối.'); });
+
+  /* ----- điện thoại thứ hai ----- */
+  function enterGuest() {
+    remoteSend = function (id, v) {
+      if (guestPeer && guestPeer.dc.readyState === 'open') { try { guestPeer.dc.send(id + ',' + v); } catch (e) {} }
+    };
+    guestWrap.appendChild(pad8);
+    pad8.classList.add('on');
+    guestWrap.hidden = false;
+    document.body.style.overflow = 'hidden';
+    try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(function (l) { wakeLock = l; }, function () {}); } catch (e) {}
+    st(guestStatusEl, 'Đã kết nối với máy chính.', true);
+  }
+  function exitGuest(closePeer) {
+    if (!remoteSend && guestWrap.hidden) return;
+    releaseAll();
+    remoteSend = null;
+    guestWrap.hidden = true;
+    document.body.style.overflow = '';
+    playerEl.appendChild(pad8);
+    pad8.classList.remove('on');
+    try { if (wakeLock) wakeLock.release(); } catch (e) {}
+    wakeLock = null;
+    if (closePeer && guestPeer) { try { guestPeer.pc.close(); } catch (e) {} }
+    guestPeer = null;
+    applyPadMode();
+  }
+  $('guestJoin').addEventListener('click', function () {
+    if (!window.RTCPeerConnection) { st(guestStatusEl, 'Trình duyệt này không hỗ trợ kết nối giữa hai máy.'); return; }
+    var d;
+    try { d = dec(offerIn.value); if (d.t !== 'o') throw new Error('bad'); }
+    catch (e) { st(guestStatusEl, 'Mã mời không đúng. Hãy dán lại đủ cả mã, bắt đầu bằng RP1.'); return; }
+    exitGuest(true);
+    answerOut.value = '';
+    st(guestStatusEl, 'Đang tạo mã trả lời, đợi vài giây...');
+    var pc = new RTCPeerConnection({ iceServers: ICE });
+    var peer = { pc: pc, dc: null };
+    guestPeer = peer;
+    pc.ondatachannel = function (ev) {
+      peer.dc = ev.channel;
+      ev.channel.onopen = enterGuest;
+      ev.channel.onclose = function () {
+        if (guestPeer !== peer) return;
+        exitGuest(true);
+        st(guestStatusEl, 'Mất kết nối với máy chính.');
+      };
+    };
+    pc.setRemoteDescription({ type: 'offer', sdp: d.s }).then(function () { return pc.createAnswer(); })
+      .then(function (a) { return pc.setLocalDescription(a); }).then(function () { return waitIce(pc); }).then(function () {
+        answerOut.value = enc({ t: 'a', s: pc.localDescription.sdp });
+        st(guestStatusEl, 'Đã tạo mã trả lời. Sao chép và gửi lại cho máy chính, rồi đợi họ bấm Kết nối.', true);
+      }).catch(function () { st(guestStatusEl, 'Không tạo được mã trả lời. Kiểm tra mã mời rồi thử lại.'); });
+  });
+  $('answerCopy').addEventListener('click', function () { copyBox(answerOut, guestStatusEl); });
+  $('guestExit').addEventListener('click', function () { exitGuest(true); st(guestStatusEl, 'Đã thoát chế độ tay cầm.'); });
+  /* lấy lại khóa màn hình sau khi quay lại app */
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && remoteSend && navigator.wakeLock) {
+      try { navigator.wakeLock.request('screen').then(function (l) { wakeLock = l; }, function () {}); } catch (e) {}
+    }
+  });
+
   /* ---------- chạy game ---------- */
   function cleanup() {
     urls.forEach(function (u) { URL.revokeObjectURL(u); });
@@ -640,6 +1017,7 @@
     } else {
       autoBlocked = false;
     }
+    applyPadMode();
     setTimeout(function () { applyCheats(true); }, 2600);
     clearInterval(timer);
     timer = setInterval(function () { saveState('auto', false); }, 15000);
@@ -660,6 +1038,7 @@
     slotSel.disabled = true;
     cheats = [];
     cheatsBox.hidden = true;
+    applyPadMode();
   }
 
   function stopNoSave() {
@@ -691,6 +1070,7 @@
       current = { id: g.id, resume: resume || null, system: g.system, name: g.name };
       cheatsBox.hidden = false;
       loadCheats(g.id);
+      applyPadMode();
       started = false;
       autoBlocked = !!resume;
       g.lastPlayed = Date.now();
@@ -698,7 +1078,8 @@
 
       var doc = '<!doctype html><html><head><meta charset="utf-8">' +
         '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-        '<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}#game{width:100%;height:100%}</style></head><body>' +
+        '<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}#game{width:100%;height:100%}</style>' +
+        (padWanted() ? '<style id="ejs-hide-pad">.ejs_virtualGamepad_parent{display:none!important}</style>' : '') + '</head><body>' +
         '<div id="game"></div><script>' +
         'EJS_player="#game";' +
         'EJS_core=' + esc(g.system) + ';' +
@@ -731,9 +1112,23 @@
   loadBtn.addEventListener('click', function () { loadSlot(slotSel.value || '1', false); });
   stopBtn.addEventListener('click', stop);
   fullBtn.addEventListener('click', function () {
-    var fn = stage.requestFullscreen || stage.webkitRequestFullscreen;
-    if (fn) { try { fn.call(stage); } catch (e) {} }
+    var fn = playerEl.requestFullscreen || playerEl.webkitRequestFullscreen;
+    if (fn) {
+      try {
+        var res = fn.call(playerEl);
+        if (res && res.then) res.then(function () {
+          try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function () {}); } catch (e) {}
+        }).catch(function () {});
+      } catch (e) {}
+    }
   });
+  function fsChange() {
+    var el = document.fullscreenElement || document.webkitFullscreenElement;
+    playerEl.classList.toggle('fs', el === playerEl);
+    if (!el) { try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (e) {} }
+  }
+  document.addEventListener('fullscreenchange', fsChange);
+  document.addEventListener('webkitfullscreenchange', fsChange);
 
   /* lưu khi rời app, khóa máy, đóng trang */
   document.addEventListener('visibilitychange', function () {
