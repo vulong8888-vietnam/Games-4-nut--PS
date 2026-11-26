@@ -5,9 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Retro Player</title>
 <meta name="theme-color" content="#0e0f1a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Retro Player">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-512.png">
 <style>
   :root {
     --bg: #0e0f1a;
@@ -197,21 +201,32 @@
   </div>
 
   <section class="twop" aria-label="Chơi 2 người">
-    <h2>Chơi 2 người bằng 2 điện thoại</h2>
-    <p class="muted">Game chạy trên máy chính. Điện thoại thứ hai làm tay cầm cho người chơi 2, hai máy ghép nối bằng cách gửi qua lại hai mã ngắn qua Zalo hoặc Messenger. Cả hai cùng nhìn màn hình của máy chính, tốt nhất là chiếu lên TV.</p>
+    <h2>Dùng điện thoại làm tay cầm</h2>
+    <p class="muted">Game chạy trên máy chính (ví dụ iPad). Mỗi điện thoại Android làm một tay cầm: tạo một mã mời riêng cho từng tay cầm, gửi qua Zalo hoặc Messenger, rồi nhận mã trả lời. Tay cầm 1 điều khiển người chơi 1, tay cầm 2 điều khiển người chơi 2. Có thể chỉ dùng tay cầm 2 và để người chơi 1 dùng tay cầm trên màn hình máy chính.</p>
+    <label class="chk" for="longCode"><input type="checkbox" id="longCode"> Dùng mã dài (chỉ bật nếu mã ngắn không kết nối được, bật ở cả hai máy)</label>
     <div class="twop-cols">
       <div class="twop-col">
-        <h3>Máy chính (có game)</h3>
-        <div class="row"><button type="button" class="primary" id="hostInvite">1. Tạo mã mời</button></div>
-        <textarea id="offerOut" readonly placeholder="Mã mời sẽ hiện ở đây. Bấm Sao chép rồi gửi cho điện thoại thứ hai." aria-label="Mã mời"></textarea>
-        <div class="row"><button type="button" class="ghost" id="offerCopy">Sao chép mã mời</button></div>
-        <textarea id="answerIn" placeholder="2. Dán mã trả lời của điện thoại thứ hai vào đây" aria-label="Mã trả lời" autocomplete="off" spellcheck="false"></textarea>
-        <div class="row"><button type="button" class="primary" id="hostConnect">3. Kết nối</button><button type="button" class="ghost" id="hostDrop" hidden>Ngắt kết nối</button></div>
-        <div class="st" id="hostStatus" role="status"></div>
-        <div class="st" id="p2Debug" aria-live="off"></div>
+        <h3>Tay cầm 1 (người chơi 1)</h3>
+        <div class="row"><button type="button" class="primary" id="invite0">1. Tạo mã mời</button></div>
+        <textarea id="offerOut0" readonly placeholder="Mã mời sẽ hiện ở đây. Bấm Sao chép rồi gửi cho điện thoại làm tay cầm 1." aria-label="Mã mời tay cầm 1"></textarea>
+        <div class="row"><button type="button" class="ghost" id="offerCopy0">Sao chép mã mời</button></div>
+        <textarea id="answerIn0" placeholder="2. Dán mã trả lời của điện thoại làm tay cầm 1 vào đây" aria-label="Mã trả lời tay cầm 1" autocomplete="off" spellcheck="false"></textarea>
+        <div class="row"><button type="button" class="primary" id="hostConnect0">3. Kết nối</button><button type="button" class="ghost" id="hostDrop0" hidden>Ngắt kết nối</button></div>
+        <div class="st" id="hostStatus0" role="status"></div>
+        <div class="st" id="p2Debug0" aria-live="off"></div>
       </div>
       <div class="twop-col">
-        <h3>Điện thoại thứ hai (làm tay cầm)</h3>
+        <h3>Tay cầm 2 (người chơi 2)</h3>
+        <div class="row"><button type="button" class="primary" id="invite1">1. Tạo mã mời</button></div>
+        <textarea id="offerOut1" readonly placeholder="Mã mời sẽ hiện ở đây. Bấm Sao chép rồi gửi cho điện thoại làm tay cầm 2." aria-label="Mã mời tay cầm 2"></textarea>
+        <div class="row"><button type="button" class="ghost" id="offerCopy1">Sao chép mã mời</button></div>
+        <textarea id="answerIn1" placeholder="2. Dán mã trả lời của điện thoại làm tay cầm 2 vào đây" aria-label="Mã trả lời tay cầm 2" autocomplete="off" spellcheck="false"></textarea>
+        <div class="row"><button type="button" class="primary" id="hostConnect1">3. Kết nối</button><button type="button" class="ghost" id="hostDrop1" hidden>Ngắt kết nối</button></div>
+        <div class="st" id="hostStatus1" role="status"></div>
+        <div class="st" id="p2Debug1" aria-live="off"></div>
+      </div>
+      <div class="twop-col">
+        <h3>Điện thoại làm tay cầm (làm trên từng điện thoại)</h3>
         <textarea id="offerIn" placeholder="1. Dán mã mời của máy chính vào đây" aria-label="Mã mời nhận được" autocomplete="off" spellcheck="false"></textarea>
         <div class="row"><button type="button" class="primary" id="guestJoin">2. Tạo mã trả lời</button></div>
         <textarea id="answerOut" readonly placeholder="Mã trả lời sẽ hiện ở đây. Bấm Sao chép rồi gửi lại cho máy chính." aria-label="Mã trả lời"></textarea>
@@ -254,10 +269,11 @@
       <li>Khi đang chơi, mục "Thêm mạng và mẹo" hiện ra bên dưới màn hình. Nhập mã Game Genie của game rồi bật công tắc. Mã đúng với từng bản game (bản Mỹ, bản Nhật có mã khác nhau).</li>
       <li>Contra bản Mỹ có sẵn nút thêm mã gợi ý. Ngoài ra Contra có mật mã 30 mạng không cần cheat: ở màn hình tiêu đề bấm Lên, Lên, Xuống, Xuống, Trái, Phải, Trái, Phải, B, A rồi Start.</li>
     </ul>
-    <h2>Chơi 2 người</h2>
+    <h2>Dùng điện thoại làm tay cầm</h2>
     <ul>
-      <li>Máy chính bấm 1. Tạo mã mời rồi gửi mã cho điện thoại thứ hai. Điện thoại thứ hai dán mã, bấm 2. Tạo mã trả lời rồi gửi mã đó lại. Máy chính dán mã trả lời và bấm 3. Kết nối. Điện thoại thứ hai sẽ tự chuyển thành tay cầm toàn màn hình.</li>
-      <li>Trong Contra, ở màn hình tiêu đề bấm Select (trên máy chính) để chuyển từ 1 PLAYER sang 2 PLAYERS rồi bấm Start. Nếu chọn 1 PLAYER thì người chơi 2 không có nhân vật để điều khiển. Nếu hai máy không kết nối được, thử cùng bật Wi-Fi một mạng, hoặc để một máy phát Wi-Fi cho máy kia.</li>
+      <li>Trên máy chính (iPad), mục "Tay cầm 1" và "Tay cầm 2": bấm 1. Tạo mã mời, sao chép và gửi cho điện thoại. Điện thoại dán mã vào ô bên phải, bấm 2. Tạo mã trả lời rồi gửi mã đó lại. Máy chính dán mã trả lời và bấm 3. Kết nối. Điện thoại tự chuyển thành tay cầm toàn màn hình và cho biết nó là người chơi mấy.</li>
+      <li>Khi tay cầm 1 kết nối, tay cầm cảm ứng trên màn hình máy chính tự ẩn để không bị nhận phím hai lần.</li>
+      <li>Trong Contra, ở màn hình tiêu đề bấm Select để chuyển từ 1 PLAYER sang 2 PLAYERS rồi bấm Start. Nếu chọn 1 PLAYER thì người chơi 2 không có nhân vật để điều khiển. Nếu hai máy không kết nối được, thử cùng bật Wi-Fi một mạng, hoặc để một máy phát Wi-Fi cho máy kia.</li>
     </ul>
     <h2>Điều khiển</h2>
     <ul>
@@ -270,7 +286,7 @@
 </div>
 
 <div class="guestwrap" id="guestWrap" hidden>
-  <div class="guestbar"><span id="guestBarText">Tay cầm người chơi 2</span><button type="button" class="ghost" id="guestExit">Thoát</button></div>
+  <div class="guestbar"><span id="guestBarText">Tay cầm</span><button type="button" class="ghost" id="guestExit">Thoát</button></div>
 </div>
 
 <script>
@@ -753,19 +769,20 @@
   /* hiện tay cầm của app và ẩn tay cầm mặc định của trình giả lập (hoặc ngược lại) */
   function applyPadMode() {
     if (remoteSend) return;
-    var show = padWanted();
+    var hideEjs = padWanted();
+    var show = hideEjs && !(slots && slots[0] && slots[0].dc && slots[0].dc.readyState === 'open');
     if (!show && pad8.classList.contains('on')) releaseAll();
     pad8.classList.toggle('on', show);
     try {
       var doc = frame && frame.contentDocument;
       if (doc && doc.head) {
         var st = doc.getElementById('ejs-hide-pad');
-        if (show && !st) {
+        if (hideEjs && !st) {
           st = doc.createElement('style');
           st.id = 'ejs-hide-pad';
           st.textContent = '.ejs_virtualGamepad_parent{display:none!important}';
           doc.head.appendChild(st);
-        } else if (!show && st) { st.remove(); }
+        } else if (!hideEjs && st) { st.remove(); }
       }
     } catch (e) {}
   }
@@ -777,15 +794,64 @@
   /* ---------- chơi 2 người bằng 2 điện thoại ---------- */
   var ICE = [{ urls: 'stun:stun.l.google.com:19302' }];
   var P2_IDS = { 0: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1 };
-  var hostPeer = null, guestPeer = null, remoteHeld = {}, wakeLock = null;
-  var hostStatusEl = $('hostStatus'), guestStatusEl = $('guestStatus2');
-  var offerOut = $('offerOut'), answerIn = $('answerIn'), offerIn = $('offerIn'), answerOut = $('answerOut');
-  var guestWrap = $('guestWrap'), hostDrop = $('hostDrop');
+  var guestPeer = null, wakeLock = null;
+  var guestStatusEl = $('guestStatus2');
+  var offerIn = $('offerIn'), answerOut = $('answerOut');
+  var guestWrap = $('guestWrap');
+  var guestLabel = 'Tay cầm', guestSent = 0;
 
   function st(el, msg, ok) { el.textContent = msg || ''; el.className = 'st' + (ok ? ' ok' : ''); }
-  function enc(o) { return 'RP1.' + btoa(unescape(encodeURIComponent(JSON.stringify(o)))); }
+  /* Mã dài (RP1): cả đoạn SDP. Mã ngắn (RP2): chỉ giữ các thông tin cần để kết nối, ngắn hơn khoảng 3 lần. */
+  var SETUP_CODE = { actpass: 'x', active: 'a', passive: 'p' }, SETUP_NAME = { x: 'actpass', a: 'active', p: 'passive' };
+  var CTYPE = { host: 'h', srflx: 's', relay: 'r', prflx: 'p' }, CTYPE_NAME = { h: 'host', s: 'srflx', r: 'relay', p: 'prflx' };
+  function b64url(bytes) { return btoa(String.fromCharCode.apply(null, bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function unb64url(t) {
+    t = t.replace(/-/g, '+').replace(/_/g, '/');
+    while (t.length % 4) t += '=';
+    var raw = atob(t), out = [];
+    for (var i = 0; i < raw.length; i++) out.push(raw.charCodeAt(i));
+    return out;
+  }
+  function encShort(o) {
+    var sdp = o.s;
+    var m;
+    var ufrag = (m = /a=ice-ufrag:(\S+)/.exec(sdp)) && m[1];
+    var pwd = (m = /a=ice-pwd:(\S+)/.exec(sdp)) && m[1];
+    var fp = (m = /a=fingerprint:sha-256 ([0-9A-Fa-f:]+)/.exec(sdp)) && m[1];
+    var setup = (m = /a=setup:(actpass|active|passive)/.exec(sdp)) && SETUP_CODE[m[1]];
+    if (!ufrag || !pwd || !fp || !setup) return null;
+    var fpBytes = fp.split(':').map(function (h) { return parseInt(h, 16); });
+    if (fpBytes.length !== 32 || fpBytes.some(isNaN)) return null;
+    var cands = [], re = /a=candidate:(\S+) 1 udp (\d+) (\S+) (\d+) typ (host|srflx|relay|prflx)/g;
+    while ((m = re.exec(sdp))) cands.push([CTYPE[m[5]], (+m[2]).toString(36), m[3], m[4], m[1]].join(','));
+    if (!cands.length) return null;
+    return 'RP2|' + o.t + setup + '|' + ufrag + '|' + pwd + '|' + b64url(fpBytes) + '|' + cands.join(';');
+  }
+  function decShort(t) {
+    var p = t.split('|');
+    if (p.length !== 6 || p[0] !== 'RP2') throw new Error('bad');
+    var kind = p[1].charAt(0), setup = SETUP_NAME[p[1].charAt(1)];
+    if ((kind !== 'o' && kind !== 'a') || !setup) throw new Error('bad');
+    var fp = unb64url(p[4]).map(function (n) { return (n < 16 ? '0' : '') + n.toString(16).toUpperCase(); }).join(':');
+    var lines = ['v=0', 'o=- ' + Math.floor(Math.random() * 1e12) + ' 2 IN IP4 127.0.0.1', 's=-', 't=0 0',
+      'a=group:BUNDLE 0', 'a=msid-semantic: WMS', 'm=application 9 UDP/DTLS/SCTP webrtc-datachannel', 'c=IN IP4 0.0.0.0',
+      'a=ice-ufrag:' + p[2], 'a=ice-pwd:' + p[3], 'a=fingerprint:sha-256 ' + fp, 'a=setup:' + setup,
+      'a=mid:0', 'a=sctp-port:5000', 'a=max-message-size:262144'];
+    p[5].split(';').forEach(function (c) {
+      var f = c.split(',');
+      if (f.length !== 5 || !CTYPE_NAME[f[0]]) throw new Error('bad');
+      lines.push('a=candidate:' + f[4] + ' 1 udp ' + parseInt(f[1], 36) + ' ' + f[2] + ' ' + f[3] + ' typ ' + CTYPE_NAME[f[0]] + ' generation 0');
+    });
+    return { t: kind, s: lines.join('\r\n') + '\r\n' };
+  }
+  function enc(o) {
+    var longCode = $('longCode') && $('longCode').checked;
+    if (!longCode) { var sh = encShort(o); if (sh) return sh; }
+    return 'RP1.' + btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+  }
   function dec(text) {
     var t = (text || '').replace(/\s+/g, '');
+    if (t.indexOf('RP2|') === 0) return decShort(t);
     if (t.indexOf('RP1.') !== 0) throw new Error('bad');
     return JSON.parse(decodeURIComponent(escape(atob(t.slice(4)))));
   }
@@ -806,88 +872,108 @@
     } catch (e) { fallback(); }
   }
 
-  /* ----- máy chính ----- */
-  function releaseP2() {
+  /* ----- máy chính: tối đa 2 tay cầm (người chơi 1 và 2) ----- */
+  var P2_NAMES = { 0: 'B', 2: 'Select', 3: 'Start', 4: 'Lên', 5: 'Xuống', 6: 'Trái', 7: 'Phải', 8: 'A' };
+  var slots = [null, null];
+
+  function slotEl(n) {
+    return {
+      offer: $('offerOut' + n), ans: $('answerIn' + n), drop: $('hostDrop' + n),
+      st: $('hostStatus' + n), dbg: $('p2Debug' + n)
+    };
+  }
+  function releaseSlot(n) {
+    var sl = slots[n];
+    if (!sl) return;
     var e = emu();
-    Object.keys(remoteHeld).forEach(function (id) {
-      if (remoteHeld[id] && e && e.gameManager && e.gameManager.simulateInput) {
-        try { e.gameManager.simulateInput(1, +id, 0); } catch (err) {}
+    Object.keys(sl.held).forEach(function (id) {
+      if (sl.held[id] && e && e.gameManager && e.gameManager.simulateInput) {
+        try { e.gameManager.simulateInput(n, +id, 0); } catch (err) {}
       }
     });
-    remoteHeld = {};
+    sl.held = {};
   }
-  var P2_NAMES = { 0: 'B', 2: 'Select', 3: 'Start', 4: 'Lên', 5: 'Xuống', 6: 'Trái', 7: 'Phải', 8: 'A' };
-  var p2Count = 0, p2Info = '', p2Raf = 0;
-  function showP2Debug() {
-    p2Raf = 0;
-    st($('p2Debug'), 'Đã nhận ' + p2Count + ' lệnh phím từ người chơi 2. ' + p2Info);
-  }
-  function onRemoteInput(msg) {
+  function onRemoteInput(n, msg) {
+    var sl = slots[n];
+    if (!sl) return;
     var p = String(msg).split(',');
     var id = +p[0], v = +p[1] ? 1 : 0;
     if (!P2_IDS[id]) return;
-    remoteHeld[id] = v;
+    sl.held[id] = v;
     var e = emu();
     var ok = !!(e && e.gameManager && e.gameManager.simulateInput);
     if (ok) {
-      try { e.gameManager.simulateInput(1, id, v); } catch (err) { ok = false; }
+      try { e.gameManager.simulateInput(n, id, v); } catch (err) { ok = false; }
     }
-    p2Count++;
-    p2Info = 'Phím cuối: ' + P2_NAMES[id] + (v ? ' (nhấn)' : ' (thả)') + (ok ? '.' : '. Chưa có game đang chạy trên máy chính nên chưa chuyển vào game được.');
-    if (!p2Raf) p2Raf = requestAnimationFrame(showP2Debug);
-  }
-  function hostClose() {
-    releaseP2();
-    if (hostPeer) { try { hostPeer.pc.close(); } catch (e) {} hostPeer = null; }
-    hostDrop.hidden = true;
-  }
-  $('hostInvite').addEventListener('click', function () {
-    if (!window.RTCPeerConnection) { st(hostStatusEl, 'Trình duyệt này không hỗ trợ kết nối giữa hai máy.'); return; }
-    hostClose();
-    p2Count = 0; p2Info = '';
-    st($('p2Debug'), '');
-    offerOut.value = '';
-    st(hostStatusEl, 'Đang tạo mã mời, đợi vài giây...');
-    var pc = new RTCPeerConnection({ iceServers: ICE });
-    var dc = pc.createDataChannel('pad');
-    var peer = { pc: pc, dc: dc };
-    hostPeer = peer;
-    dc.onopen = function () {
-      hostDrop.hidden = false;
-      st(hostStatusEl, 'Người chơi 2 đã kết nối. Trong game, chọn 2 PLAYERS ở màn hình tiêu đề rồi bấm Start.', true);
-    };
-    dc.onclose = function () {
-      if (hostPeer !== peer) return;
-      releaseP2();
-      hostDrop.hidden = true;
-      st(hostStatusEl, 'Người chơi 2 đã ngắt kết nối.');
-    };
-    dc.onmessage = function (ev) { onRemoteInput(ev.data); };
-    pc.createOffer().then(function (o) { return pc.setLocalDescription(o); }).then(function () { return waitIce(pc); }).then(function () {
-      offerOut.value = enc({ t: 'o', s: pc.localDescription.sdp });
-      st(hostStatusEl, 'Đã tạo mã mời. Sao chép và gửi cho điện thoại thứ hai, rồi dán mã trả lời vào ô bên dưới.', true);
-    }).catch(function () { st(hostStatusEl, 'Không tạo được mã mời. Thử lại.'); });
-  });
-  $('offerCopy').addEventListener('click', function () { copyBox(offerOut, hostStatusEl); });
-  $('hostConnect').addEventListener('click', function () {
-    if (!hostPeer) { st(hostStatusEl, 'Bấm Tạo mã mời trước.'); return; }
-    var d;
-    try { d = dec(answerIn.value); if (d.t !== 'a') throw new Error('bad'); }
-    catch (e) { st(hostStatusEl, 'Mã trả lời không đúng. Hãy dán lại đủ cả mã, bắt đầu bằng RP1.'); return; }
-    st(hostStatusEl, 'Đang kết nối...');
-    hostPeer.pc.setRemoteDescription({ type: 'answer', sdp: d.s }).catch(function () {
-      st(hostStatusEl, 'Mã trả lời không khớp với mã mời hiện tại. Tạo mã mời mới và làm lại.');
+    sl.count++;
+    sl.info = 'Phím cuối: ' + P2_NAMES[id] + (v ? ' (nhấn)' : ' (thả)') + (ok ? '.' : '. Chưa có game đang chạy trên máy chính nên chưa chuyển vào game được.');
+    if (!sl.raf) sl.raf = requestAnimationFrame(function () {
+      sl.raf = 0;
+      st(slotEl(n).dbg, 'Đã nhận ' + sl.count + ' lệnh phím từ tay cầm ' + (n + 1) + '. ' + sl.info);
     });
-  });
-  hostDrop.addEventListener('click', function () { hostClose(); st(hostStatusEl, 'Đã ngắt kết nối.'); });
+  }
+  function slotClose(n) {
+    releaseSlot(n);
+    if (slots[n]) { try { slots[n].pc.close(); } catch (e) {} slots[n] = null; }
+    slotEl(n).drop.hidden = true;
+    applyPadMode();
+  }
+  function setupSlot(n) {
+    var q = slotEl(n), k = n + 1;
+    $('invite' + n).addEventListener('click', function () {
+      if (!window.RTCPeerConnection) { st(q.st, 'Trình duyệt này không hỗ trợ kết nối giữa hai máy.'); return; }
+      slotClose(n);
+      st(q.dbg, '');
+      q.offer.value = '';
+      st(q.st, 'Đang tạo mã mời, đợi vài giây...');
+      var pc = new RTCPeerConnection({ iceServers: ICE });
+      var dc = pc.createDataChannel('pad');
+      var sl = { pc: pc, dc: dc, held: {}, count: 0, info: '', raf: 0 };
+      slots[n] = sl;
+      dc.onopen = function () {
+        q.drop.hidden = false;
+        try { dc.send('P,' + k); } catch (e) {}
+        applyPadMode();
+        st(q.st, 'Tay cầm ' + k + ' đã kết nối (người chơi ' + k + '). Trong game, chọn 2 PLAYERS ở màn hình tiêu đề nếu cần rồi bấm Start.', true);
+      };
+      dc.onclose = function () {
+        if (slots[n] !== sl) return;
+        releaseSlot(n);
+        q.drop.hidden = true;
+        slots[n] = null;
+        applyPadMode();
+        st(q.st, 'Tay cầm ' + k + ' đã ngắt kết nối.');
+      };
+      dc.onmessage = function (ev) { onRemoteInput(n, ev.data); };
+      pc.createOffer().then(function (o) { return pc.setLocalDescription(o); }).then(function () { return waitIce(pc); }).then(function () {
+        q.offer.value = enc({ t: 'o', s: pc.localDescription.sdp });
+        st(q.st, 'Đã tạo mã mời. Sao chép và gửi cho điện thoại làm tay cầm ' + k + ', rồi dán mã trả lời vào ô bên dưới.', true);
+      }).catch(function () { st(q.st, 'Không tạo được mã mời. Thử lại.'); });
+    });
+    $('offerCopy' + n).addEventListener('click', function () { copyBox(q.offer, q.st); });
+    $('hostConnect' + n).addEventListener('click', function () {
+      if (!slots[n]) { st(q.st, 'Bấm Tạo mã mời trước.'); return; }
+      var d;
+      try { d = dec(q.ans.value); if (d.t !== 'a') throw new Error('bad'); }
+      catch (e) { st(q.st, 'Mã trả lời không đúng. Hãy dán lại đủ cả mã, bắt đầu bằng RP'); return; }
+      st(q.st, 'Đang kết nối...');
+      slots[n].pc.setRemoteDescription({ type: 'answer', sdp: d.s }).catch(function () {
+        st(q.st, 'Mã trả lời không khớp với mã mời hiện tại. Tạo mã mời mới và làm lại.');
+      });
+    });
+    q.drop.addEventListener('click', function () { slotClose(n); st(q.st, 'Đã ngắt kết nối.'); });
+  }
+  setupSlot(0);
+  setupSlot(1);
 
   /* ----- điện thoại thứ hai ----- */
   function enterGuest() {
-    var sent = 0, bar = $('guestBarText');
-    bar.textContent = 'Tay cầm người chơi 2 · đã kết nối';
+    var bar = $('guestBarText');
+    guestSent = 0;
+    bar.textContent = guestLabel + ' · đã kết nối';
     remoteSend = function (id, v) {
       if (guestPeer && guestPeer.dc.readyState === 'open') {
-        try { guestPeer.dc.send(id + ',' + v); sent++; bar.textContent = 'Tay cầm người chơi 2 · đã gửi ' + sent + ' lệnh'; } catch (e) {}
+        try { guestPeer.dc.send(id + ',' + v); guestSent++; bar.textContent = guestLabel + ' · đã gửi ' + guestSent + ' lệnh'; } catch (e) {}
       }
     };
     guestWrap.appendChild(pad8);
@@ -915,7 +1001,7 @@
     if (!window.RTCPeerConnection) { st(guestStatusEl, 'Trình duyệt này không hỗ trợ kết nối giữa hai máy.'); return; }
     var d;
     try { d = dec(offerIn.value); if (d.t !== 'o') throw new Error('bad'); }
-    catch (e) { st(guestStatusEl, 'Mã mời không đúng. Hãy dán lại đủ cả mã, bắt đầu bằng RP1.'); return; }
+    catch (e) { st(guestStatusEl, 'Mã mời không đúng. Hãy dán lại đủ cả mã, bắt đầu bằng RP'); return; }
     exitGuest(true);
     answerOut.value = '';
     st(guestStatusEl, 'Đang tạo mã trả lời, đợi vài giây...');
@@ -924,6 +1010,13 @@
     guestPeer = peer;
     pc.ondatachannel = function (ev) {
       peer.dc = ev.channel;
+      ev.channel.onmessage = function (m) {
+        var t = String(m.data);
+        if (t.indexOf('P,') === 0) {
+          guestLabel = 'Tay cầm người chơi ' + t.slice(2);
+          $('guestBarText').textContent = guestLabel + (guestSent ? ' · đã gửi ' + guestSent + ' lệnh' : ' · đã kết nối');
+        }
+      };
       ev.channel.onopen = enterGuest;
       ev.channel.onclose = function () {
         if (guestPeer !== peer) return;
@@ -1143,6 +1236,8 @@
       } catch (e) {}
     }
   });
+  /* iPhone không có chế độ toàn màn hình cho trang web, nên ẩn nút đó đi */
+  if (!playerEl.requestFullscreen && !playerEl.webkitRequestFullscreen) fullBtn.hidden = true;
   function exitFs() {
     var fn = document.exitFullscreen || document.webkitExitFullscreen;
     if (fn && (document.fullscreenElement || document.webkitFullscreenElement)) { try { fn.call(document); } catch (e) {} }
